@@ -11,12 +11,14 @@ public class RSA {
     private final Logger    logger = LogManager.getLogger(RSA.class);
 
     private int             bitLength;
-    private BigInteger      moduloN;
-    private BigInteger      euleroN;
-    private BigInteger      esponentePubblicoE;
-    private BigInteger      esponentePrivatoD;
-    private BigInteger[]    chiavePubblica;
-    private BigInteger[]    chiavePrivata;
+    private BigInteger      p;
+    private BigInteger      q;
+    private BigInteger      n;
+    private BigInteger      eulerN;
+    private BigInteger      publicExponentE;
+    private BigInteger      privateExponentD;
+    private BigInteger[]    publicKey;
+    private BigInteger[]    privateKey;
 
     public RSA () {
         bitLength = 4096;
@@ -29,23 +31,23 @@ public class RSA {
     }
 
     private void generaChiavi() {
-        logger.info("Generating keypairs...");
+        logger.info("Generating keypair...");
 
-        BigInteger p = randomPrime();
+        p = randomPrime();
         logger.debug("First random prime number generated!");
-        BigInteger q = randomPrime();
+        q = randomPrime();
         logger.debug("First random prime number generated!");
 
-        moduloN = p.multiply(q);
-        euleroN = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
+        n = p.multiply(q);
+        eulerN = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
 
-        esponentePubblicoE = BigInteger.valueOf(65537);
-        chiavePubblica = new BigInteger[]{moduloN, esponentePubblicoE};
-        logger.debug("Public keypair generated! (" + moduloN + ", " + esponentePubblicoE + ")");
+        publicExponentE = BigInteger.valueOf(65537);
+        publicKey = new BigInteger[]{n, publicExponentE};
+        logger.debug("Public key generated! (" + n + ", " + publicExponentE + ")");
 
-        esponentePrivatoD = esponentePubblicoE.modInverse(euleroN);
-        chiavePrivata = new BigInteger[]{moduloN, esponentePrivatoD};
-        logger.debug("Private keypair generated! (" + moduloN + ", " + esponentePrivatoD + ")");
+        privateExponentD = publicExponentE.modInverse(eulerN);
+        privateKey = new BigInteger[]{n, privateExponentD};
+        logger.debug("Private key generated! (" + n + ", " + privateExponentD + ")");
     }
 
     private BigInteger randomPrime() {
@@ -60,7 +62,7 @@ public class RSA {
 
         for (int i=0; i<message.length(); i++) {
             logger.debug("Encrypting character " + (i+1) + " out of " + message.length());
-            BigInteger enc = BigInteger.valueOf((int) message.charAt(i)).modPow(esponentePubblicoE, moduloN);
+            BigInteger enc = BigInteger.valueOf((int) message.charAt(i)).modPow(publicExponentE, n);
             sb.append(enc).append(" ");
         }
 
@@ -75,7 +77,7 @@ public class RSA {
         for (int i=0; i<nums.length; i++) {
             logger.debug("Decrypting character " + (i+1) + " out of " + nums.length);
             BigInteger encrypted = new BigInteger(nums[i]);
-            BigInteger decrypted = encrypted.modPow(esponentePrivatoD, moduloN);
+            BigInteger decrypted = encrypted.modPow(privateExponentD, n);
             decsb.append((char) decrypted.intValue());
         }
 
@@ -86,27 +88,35 @@ public class RSA {
         return bitLength;
     }
 
-    public BigInteger getModuloN() {
-        return moduloN;
+    public BigInteger getP() {
+        return p;
     }
 
-    public BigInteger getEuleroN() {
-        return euleroN;
+    public BigInteger getQ() {
+        return q;
     }
 
-    public BigInteger getEsponentePubblicoE() {
-        return esponentePubblicoE;
+    public BigInteger getN() {
+        return n;
     }
 
-    public BigInteger getEsponentePrivatoD() {
-        return esponentePrivatoD;
+    public BigInteger getEulerN() {
+        return eulerN;
     }
 
-    public BigInteger[] getChiavePubblica() {
-        return chiavePubblica;
+    public BigInteger getPublicExponentE() {
+        return publicExponentE;
     }
 
-    public BigInteger[] getChiavePrivata() {
-        return chiavePrivata;
+    public BigInteger getPrivateExponentD() {
+        return privateExponentD;
+    }
+
+    public BigInteger[] getPublicKey() {
+        return publicKey;
+    }
+
+    public BigInteger[] getPrivateKey() {
+        return privateKey;
     }
 }
