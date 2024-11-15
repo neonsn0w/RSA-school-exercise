@@ -29,14 +29,23 @@ public class RSA {
     }
 
     private void generaChiavi() {
+        logger.info("Generating keypairs...");
+
         BigInteger p = randomPrime();
+        logger.debug("First random prime number generated!");
         BigInteger q = randomPrime();
+        logger.debug("First random prime number generated!");
+
         moduloN = p.multiply(q);
         euleroN = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
+
         esponentePubblicoE = BigInteger.valueOf(65537);
-        esponentePrivatoD = esponentePubblicoE.modInverse(euleroN);
         chiavePubblica = new BigInteger[]{moduloN, esponentePubblicoE};
+        logger.debug("Public keypair generated! (" + moduloN + ", " + esponentePubblicoE + ")");
+
+        esponentePrivatoD = esponentePubblicoE.modInverse(euleroN);
         chiavePrivata = new BigInteger[]{moduloN, esponentePrivatoD};
+        logger.debug("Private keypair generated! (" + moduloN + ", " + esponentePrivatoD + ")");
     }
 
     private BigInteger randomPrime() {
@@ -45,9 +54,12 @@ public class RSA {
     }
 
     public String encrypt(String message) {
+        logger.info("Encrypting message...");
+
         StringBuilder sb = new StringBuilder();
 
         for (int i=0; i<message.length(); i++) {
+            logger.debug("Encrypting character " + (i+1) + " out of " + message.length());
             BigInteger enc = BigInteger.valueOf((int) message.charAt(i)).modPow(esponentePubblicoE, moduloN);
             sb.append(enc).append(" ");
         }
@@ -56,11 +68,13 @@ public class RSA {
     }
 
     public String decrypt(String message) {
+        logger.info("Decrypting message...");
         StringBuilder decsb = new StringBuilder();
         String[] nums = message.split(" ");
 
-        for (String num : nums) {
-            BigInteger encrypted = new BigInteger(num);
+        for (int i=0; i<nums.length; i++) {
+            logger.debug("Decrypting character " + (i+1) + " out of " + nums.length);
+            BigInteger encrypted = new BigInteger(nums[i]);
             BigInteger decrypted = encrypted.modPow(esponentePrivatoD, moduloN);
             decsb.append((char) decrypted.intValue());
         }
