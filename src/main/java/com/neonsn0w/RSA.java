@@ -6,6 +6,9 @@ import org.apache.logging.log4j.Logger;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
+/**
+ * A class that generates an RSA keypair when created and offers methods for encrypting and decrypting messages.
+ */
 public class RSA {
 
     private final Logger    logger = LogManager.getLogger(RSA.class);
@@ -55,6 +58,11 @@ public class RSA {
         return BigInteger.probablePrime(bitLength, random);
     }
 
+    /**
+     * Each character is separated and individually converted to int and encrypted.
+     * @param message
+     * @return Encrypted characters separated by a space
+     */
     public String encrypt(String message) {
         logger.info("Encrypting message...");
 
@@ -69,6 +77,10 @@ public class RSA {
         return sb.toString();
     }
 
+    /**
+     * It decrypts a string that is in the same format that is given by encrypt().
+     * @param message
+     */
     public String decrypt(String message) {
         logger.info("Decrypting message...");
         StringBuilder decsb = new StringBuilder();
