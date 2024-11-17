@@ -25,15 +25,15 @@ public class RSA {
 
     public RSA () {
         bitLength = 4096;
-        generaChiavi();
+        generateKeys();
     }
 
     public RSA (int bitLength) {
         this.bitLength = bitLength;
-        generaChiavi();
+        generateKeys();
     }
 
-    private void generaChiavi() {
+    private void generateKeys() {
         logger.info("Generating keypair...");
 
         p = randomPrime();
